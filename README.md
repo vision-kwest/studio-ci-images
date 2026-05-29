@@ -34,16 +34,22 @@ directories with their own Dockerfiles, smoke tests, and documentation.
 
 ## Published image naming
 
-The OpenUSD builder image is published to GitHub Container Registry as:
+The OpenUSD builder image is published to GitHub Container Registry with a flat,
+owner-scoped name:
 
 ```text
 ghcr.io/<owner>/openusd-builder
 ```
 
-This repository intentionally uses `ghcr.io/${{ github.repository_owner }}/openusd-builder`
-instead of `ghcr.io/${{ github.repository }}/openusd-builder`. The owner-scoped name keeps
-CI image references short and stable across downstream repos, even if the image source
-repository is renamed or if additional image-builder repos are introduced later.
+For example, a manually published studio release tag can be referenced as:
+
+```text
+ghcr.io/vision-kwest/openusd-builder:26.05
+```
+
+Downstream repositories should depend on this stable image name rather than the source
+repository name. That keeps `studio-openusd` and other consumers insulated if this repo is
+renamed or if image-builder source code is reorganized later.
 
 Published tags include:
 

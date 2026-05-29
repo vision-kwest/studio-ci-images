@@ -56,6 +56,8 @@ inside this container:
 
 ```sh
 docker run --rm -v "$PWD:/workspace" ghcr.io/<owner>/openusd-builder:latest bash
+# Example:
+# docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 bash
 ```
 
 The image supplies the build factory. `studio-openusd` owns the OpenUSD version,
