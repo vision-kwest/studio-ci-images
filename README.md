@@ -1,36 +1,23 @@
-# OpenUSD CI Docker Image
+# Studio CI Images
 
-This repository builds and publishes a Docker image intended for OpenUSD build jobs.
-The image is based on Ubuntu 24.04 and includes common compiler, build-system,
-Rez, OpenGL/X11, TBB, Boost, OpenImageIO, and OpenEXR dependencies.
+This repository contains Docker image builder projects for studio CI and build automation.
+Each image builder is encapsulated in its own directory so additional images can be added
+without crowding the repository root.
 
-## Included tooling and libraries
-
-- Ubuntu 24.04
-- `gcc` / `g++`
-- `cmake`
-- `ninja-build`
-- `python3`
-- `git`
-- `build-essential`
-- Rez
-- OpenGL and X11 development libraries
-- TBB
-- Boost
-- OpenImageIO and OpenEXR development libraries
-
-## Build locally
-
-```sh
-docker build -t openusd-build:local .
-```
-
-## Published image
-
-The GitHub Actions workflow publishes the image to GitHub Container Registry on
-every push to the `main` branch:
+## Image builders
 
 ```text
-ghcr.io/<owner>/<repository>:main
-ghcr.io/<owner>/<repository>:sha-<commit>
+studio-ci-images/
+├── openusd-builder/
+├── rez-builder/
+├── blender-builder/
+└── render-tools/
 ```
+
+Only `openusd-builder/` exists today. The other directories are examples of how future
+image builders can be organized.
+
+## OpenUSD builder
+
+The OpenUSD builder image definition lives in [`openusd-builder/`](openusd-builder/).
+It is published by the GitHub Actions workflow in `.github/workflows/docker-publish.yml`.
