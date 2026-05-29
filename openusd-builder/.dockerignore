@@ -1,5 +1,9 @@
 .git
 .github
 .gitignore
-Dockerfile
-README.md
+*.md
+**/__pycache__
+**/*.pyc
+.DS_Store
+.env
+.env.*
