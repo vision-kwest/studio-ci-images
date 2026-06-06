@@ -27,6 +27,29 @@ This image does **not** contain:
 Those responsibilities belong to downstream package repositories such as
 `studio-openusd`, with shared Rez standards supplied by `studio-rez`.
 
+
+## Image Tags
+
+The published GHCR image uses the flat image name:
+
+```text
+ghcr.io/vision-kwest/openusd-builder
+```
+
+The workflow builds this image once from `openusd-builder/Dockerfile`, runs the smoke
+test, and then pushes multiple tags for the same tested image build:
+
+- `latest` is convenient for testing and quick experiments, but it moves over time.
+- `main` tracks the current `main` branch image.
+- `26.05` is the human-readable builder tag intended for OpenUSD 26.05 package builds
+  and is the recommended default for `studio-openusd` workflows.
+- `sha-<commit>` is the audit/reproducibility tag for the exact `studio-ci-images`
+  commit and should be recorded in the final USD Rez package manifest.
+
+When `latest`, `main`, `26.05`, and `sha-*` are published by the same workflow run, they
+may all point to the same image digest. These tags are references to the same pushed
+image, not separate full image builds.
+
 ## Local build
 
 From the `studio-ci-images` repository root:
@@ -55,10 +78,14 @@ OpenUSD source, run Pixar's `build_usd.py`, execute tests, and create the USD Re
 inside this container:
 
 ```sh
-docker run --rm -v "$PWD:/workspace" ghcr.io/<owner>/openusd-builder:latest bash
-# Example:
-# docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 bash
+# Recommended default for OpenUSD 26.05 package builds:
+docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 bash
 ```
 
 The image supplies the build factory. `studio-openusd` owns the OpenUSD version,
 configuration flags, test policy, and Rez packaging step.
+
+
+`studio-openusd` should write the resolved image digest into the final USD Rez package
+manifest so the package records the exact builder image used. The `sha-*` tag supports
+audit and reproducibility, while `latest` should be limited to convenience and testing.

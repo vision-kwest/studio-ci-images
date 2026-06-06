@@ -51,13 +51,38 @@ Downstream repositories should depend on this stable image name rather than the 
 repository name. That keeps `studio-openusd` and other consumers insulated if this repo is
 renamed or if image-builder source code is reorganized later.
 
-Published tags include:
+## Image Tags
 
-- `latest`
-- `main`
-- `sha-<commit-sha>`
-- an optional manual release tag such as `26.05` when supplied to the workflow dispatch
-  input `image_tag`
+The OpenUSD builder image is published at the flat image name:
+
+```text
+ghcr.io/vision-kwest/openusd-builder
+```
+
+The publish workflow builds `openusd-builder/Dockerfile` once, runs the container smoke
+test, and then pushes multiple tags that reference that same tested image build. The
+standard tags are:
+
+- `latest` is convenient for quick testing and ad-hoc pulls, but it moves over time.
+- `main` tracks the current `main` branch image.
+- `26.05` is the human-readable builder tag intended for OpenUSD 26.05 package builds
+  and is the recommended default tag for `studio-openusd` workflows.
+- `sha-<commit>` is the audit/reproducibility tag for the exact `studio-ci-images`
+  commit and should be recorded in the final USD Rez package manifest.
+
+Multiple tags do not mean multiple full images are stored when those tags point to the
+same digest. `latest`, `main`, `26.05`, and `sha-*` may all be references to the same
+pushed image digest.
+
+`studio-openusd` should default to this image for OpenUSD 26.05 builds:
+
+```text
+ghcr.io/vision-kwest/openusd-builder:26.05
+```
+
+For reproducibility, `studio-openusd` should resolve the image digest used by the build
+and write that digest into the final USD Rez package manifest. The `sha-*` tag is useful
+for audit trails and reproducing a build from the exact `studio-ci-images` commit.
 
 ## Build locally
 
@@ -76,7 +101,7 @@ docker run --rm openusd-builder:local smoke-test-openusd-builder
 ## Pull from GHCR
 
 ```sh
-docker pull ghcr.io/<owner>/openusd-builder:latest
+docker pull ghcr.io/vision-kwest/openusd-builder:26.05
 ```
 
 ## Downstream usage from studio-openusd
@@ -85,7 +110,7 @@ docker pull ghcr.io/<owner>/openusd-builder:latest
 test suite, and Rez package creation inside this image, for example:
 
 ```sh
-docker run --rm -v "$PWD:/workspace" ghcr.io/<owner>/openusd-builder:latest bash
+docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 bash
 ```
 
 Inside that container, `studio-openusd` can apply `studio-rez` configuration and package
