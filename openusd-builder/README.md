@@ -1,8 +1,11 @@
 # OpenUSD Builder Image
 
 `openusd-builder` is the reusable factory image for building Pixar OpenUSD in downstream
-CI jobs. It contains the operating-system packages and build tools expected by OpenUSD's
-`build_usd.py` workflow, plus Rez so downstream repositories can create Rez packages.
+CI jobs. It contains the operating-system packages, Python modules, and build tools
+expected by OpenUSD's `build_usd.py` workflow, plus Rez so downstream repositories can
+create Rez packages. The image intentionally includes prerequisites for Python support,
+imaging, usdview, MaterialX, tools, and examples/tutorial builds; it does not contain
+compiled OpenUSD itself.
 
 ## Included
 
@@ -10,8 +13,11 @@ CI jobs. It contains the operating-system packages and build tools expected by O
 - GCC, G++, Make, CMake, and Ninja
 - Git, curl, wget, unzip, tar, gzip, xz-utils, and pkg-config
 - Python 3, Python development headers, pip, and venv support
+- PySide6, PyOpenGL, and Jinja2 installed into the system Python used by
+  `python3 build_scripts/build_usd.py`
+- `pyside6-uic` on `PATH` for OpenUSD usdview/UI generation
 - Rez installed in `/opt/rez` with `rez`, `rez-env`, and `rez-build` on `PATH`
-- OpenGL, Mesa, X11, XCB, and related GUI development/runtime libraries
+- OpenGL, Mesa, X11, XCB, Xt, and related GUI development/runtime libraries
 - TBB, Boost, OpenImageIO, and OpenEXR development libraries
 - `smoke-test-openusd-builder`, a container smoke test command
 
@@ -20,12 +26,14 @@ CI jobs. It contains the operating-system packages and build tools expected by O
 This image does **not** contain:
 
 - Pixar OpenUSD source code
-- A compiled USD installation
+- A compiled OpenUSD/USD installation
 - A USD Rez package
 - Studio-specific Rez package definitions or release rules
 
 Those responsibilities belong to downstream package repositories such as
-`studio-openusd`, with shared Rez standards supplied by `studio-rez`.
+`studio-openusd`, with shared Rez standards supplied by `studio-rez`. In other words,
+this image can run OpenUSD's `build_usd.py` unattended for the supported feature set, but
+it is not itself an OpenUSD runtime image.
 
 
 ## Image Tags
@@ -82,8 +90,10 @@ inside this container:
 docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 bash
 ```
 
-The image supplies the build factory. `studio-openusd` owns the OpenUSD version,
-configuration flags, test policy, and Rez packaging step.
+The image supplies the build factory and the known `build_usd.py` prerequisites for
+OpenUSD 26.05 Python support, imaging, usdview, MaterialX, tools, and examples/tutorials.
+`studio-openusd` owns the OpenUSD version, configuration flags, test policy, and Rez
+packaging step.
 
 
 `studio-openusd` should write the resolved image digest into the final USD Rez package

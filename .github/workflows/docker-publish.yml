@@ -63,10 +63,11 @@ jobs:
           tags=(
             "latest"
             "main"
+            "26.05"
             "sha-${GITHUB_SHA}"
           )
 
-          if [ -n "${IMAGE_TAG}" ]; then
+          if [ -n "${IMAGE_TAG}" ] && [ "${IMAGE_TAG}" != "26.05" ]; then
             tags+=("${IMAGE_TAG}")
           fi
 
