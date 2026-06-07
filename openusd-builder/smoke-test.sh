@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SYSTEM_PYTHON=/usr/bin/python3
+REZ_PYTHON=/opt/rez/bin/python
+
 echo "== OpenUSD builder smoke test =="
 
 gcc --version
@@ -8,26 +11,32 @@ g++ --version
 cmake --version
 ninja --version
 git --version
+pkg-config --version
+
+echo "command -v python3 -> $(command -v python3)"
+"${SYSTEM_PYTHON}" -c "import sys; print(sys.executable)"
+"${REZ_PYTHON}" -c "import sys; print(sys.executable)"
+
+"${SYSTEM_PYTHON}" --version
+"${REZ_PYTHON}" --version
+
+"${SYSTEM_PYTHON}" -c "import PySide6; print('PySide6 OK')"
+"${SYSTEM_PYTHON}" -c "import OpenGL; print('PyOpenGL OK')"
+"${SYSTEM_PYTHON}" -c "import jinja2; print('Jinja2 OK')"
+
 rez --version
 rez-env --help >/dev/null
-pkg-config --version
-dpkg -s libxt-dev >/dev/null
 
-python3 --version
-which python3
-python3 -c "import sys; print(sys.executable)"
-python3 -c "import PySide6; print('PySide6 OK')"
-python3 -c "import OpenGL; print('PyOpenGL OK')"
-python3 -c "import jinja2; print('Jinja2 OK')"
+dpkg -s libxt-dev >/dev/null
 
 command -v pyside6-uic
 pyside6-uic --version || pyside6-uic --help >/dev/null || true
 
 venv_dir="$(mktemp -d)"
 trap 'rm -rf "${venv_dir}"' EXIT
-python3 -m venv "${venv_dir}/venv"
+"${SYSTEM_PYTHON}" -m venv "${venv_dir}/venv"
 
-python3 - <<'PY'
+"${SYSTEM_PYTHON}" - <<'PY'
 import platform
 import sys
 

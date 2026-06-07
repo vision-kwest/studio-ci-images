@@ -13,13 +13,27 @@ compiled OpenUSD itself.
 - GCC, G++, Make, CMake, and Ninja
 - Git, curl, wget, unzip, tar, gzip, xz-utils, and pkg-config
 - Python 3, Python development headers, pip, and venv support
-- PySide6, PyOpenGL, and Jinja2 installed into the system Python used by
-  `python3 build_scripts/build_usd.py`
+- PySide6, PyOpenGL, and Jinja2 installed into the explicit OpenUSD build Python,
+  `/usr/bin/python3`
 - `pyside6-uic` on `PATH` for OpenUSD usdview/UI generation
 - Rez installed in `/opt/rez` with `rez`, `rez-env`, and `rez-build` on `PATH`
 - OpenGL, Mesa, X11, XCB, Xt, and related GUI development/runtime libraries
 - TBB, Boost, OpenImageIO, and OpenEXR development libraries
 - `smoke-test-openusd-builder`, a container smoke test command
+
+## Python interpreter policy
+
+The image intentionally separates OpenUSD's build Python from Rez's Python:
+
+- `/usr/bin/python3` is the OpenUSD build Python. Use it for OpenUSD dependency
+  checks and for downstream `build_scripts/build_usd.py` invocations so PySide6,
+  PyOpenGL, and Jinja2 are imported from the interpreter where they were installed.
+- `/opt/rez/bin/python` is only for Rez. Rez is installed in `/opt/rez`, and the Rez
+  command-line tools are available on `PATH`.
+
+`/opt/rez/bin` is placed on `PATH`, so plain `python3` may resolve to
+`/opt/rez/bin/python3` instead of the system interpreter. Do not rely on plain
+`python3` in OpenUSD build scripts or smoke checks; use `/usr/bin/python3` explicitly.
 
 ## Intentionally not included
 

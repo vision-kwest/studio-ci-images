@@ -57,21 +57,22 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # OpenUSD build_usd.py / usdview prerequisites
-# These Python packages are installed into the system Python environment used by
-# `python3 build_scripts/build_usd.py`. PySide6 provides `pyside6-uic`, PyOpenGL
-# is required by usdview/imaging paths, and Jinja2 enables schema-generation
-# tools during OpenUSD builds.
-RUN python3 -m pip install --no-cache-dir --break-system-packages \
+# These Python packages are installed into the explicit system Python used by
+# OpenUSD builds. Do not rely on plain `python3`: after Rez is installed on
+# PATH, `python3` may resolve to Rez's virtualenv interpreter instead.
+# PySide6 provides `pyside6-uic`, PyOpenGL is required by usdview/imaging paths,
+# and Jinja2 enables schema-generation tools during OpenUSD builds.
+RUN /usr/bin/python3 -m pip install --no-cache-dir --break-system-packages \
         PySide6 \
         PyOpenGL \
         Jinja2 \
-    && python3 -c "import PySide6" \
-    && python3 -c "import OpenGL" \
-    && python3 -c "import jinja2" \
+    && /usr/bin/python3 -c "import PySide6" \
+    && /usr/bin/python3 -c "import OpenGL" \
+    && /usr/bin/python3 -c "import jinja2" \
     && command -v pyside6-uic \
     && dpkg -s libxt-dev >/dev/null
 
-RUN python3 -m venv /opt/rez \
+RUN /usr/bin/python3 -m venv /opt/rez \
     && /opt/rez/bin/pip install --no-cache-dir --upgrade pip \
     && /opt/rez/bin/pip install --no-cache-dir rez \
     && for tool in rez rez-env rez-build; do \
