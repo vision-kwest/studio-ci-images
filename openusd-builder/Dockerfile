@@ -41,6 +41,7 @@ RUN apt-get update \
         libxcursor-dev \
         libxinerama-dev \
         libxxf86vm-dev \
+        libxt-dev \
         libxkbcommon-x11-0 \
         libxcb-xinerama0 \
         libxcb-image0 \
@@ -52,16 +53,32 @@ RUN apt-get update \
         libboost-all-dev \
         libopenimageio-dev \
         libopenexr-dev \
-    && python3 -m venv /opt/rez \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# OpenUSD build_usd.py / usdview prerequisites
+# These Python packages are installed into the system Python environment used by
+# `python3 build_scripts/build_usd.py`. PySide6 provides `pyside6-uic`, PyOpenGL
+# is required by usdview/imaging paths, and Jinja2 enables schema-generation
+# tools during OpenUSD builds.
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
+        PySide6 \
+        PyOpenGL \
+        Jinja2 \
+    && python3 -c "import PySide6" \
+    && python3 -c "import OpenGL" \
+    && python3 -c "import jinja2" \
+    && command -v pyside6-uic \
+    && dpkg -s libxt-dev >/dev/null
+
+RUN python3 -m venv /opt/rez \
     && /opt/rez/bin/pip install --no-cache-dir --upgrade pip \
     && /opt/rez/bin/pip install --no-cache-dir rez \
     && for tool in rez rez-env rez-build; do \
         if [ ! -e "/usr/local/bin/${tool}" ]; then \
             ln -s "/opt/rez/bin/${tool}" "/usr/local/bin/${tool}"; \
         fi; \
-    done \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    done
 
 COPY smoke-test.sh /usr/local/bin/smoke-test-openusd-builder
 COPY smoke-test.sh /workspace/smoke-test.sh

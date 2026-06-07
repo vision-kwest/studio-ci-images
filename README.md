@@ -10,14 +10,18 @@ packages themselves.
 - **`studio-ci-images`** builds Docker images that contain compilers, build tools,
   and common native dependencies.
 - **`openusd-builder`** is the OpenUSD factory image in this repo. It is designed to
-  have the tools needed for Pixar OpenUSD's `build_usd.py` workflow.
+  have the tools needed for Pixar OpenUSD's `build_usd.py` workflow, including
+  Python/usdview prerequisites such as PySide6, PyOpenGL, Jinja2, and the Xt
+  development headers needed by MaterialX.
 - **`studio-openusd`** consumes the `openusd-builder` image, clones Pixar OpenUSD,
   compiles and tests OpenUSD, then packages USD as a Rez package.
 - **`studio-rez`** provides shared Rez configuration, package standards, scripts, and
   conventions used by package-producing repos such as `studio-openusd`.
 
 This separation keeps the reusable build container stable while allowing downstream
-repositories to own source checkout, version selection, tests, and package creation.
+repositories to own source checkout, version selection, tests, and package creation. The
+builder image intentionally contains prerequisites for OpenUSD's `build_usd.py`; it does
+not contain compiled OpenUSD itself.
 
 ## Image builders
 
@@ -114,4 +118,7 @@ docker run --rm -v "$PWD:/workspace" ghcr.io/vision-kwest/openusd-builder:26.05 
 ```
 
 Inside that container, `studio-openusd` can apply `studio-rez` configuration and package
-rules while this repo remains focused only on maintaining the reusable CI image.
+rules while this repo remains focused only on maintaining the reusable CI image. The
+image is a build environment only: it includes the Python, usdview, imaging, MaterialX,
+tools, and examples/tutorial prerequisites expected by OpenUSD 26.05 builds, but it does
+not ship a compiled USD install.
