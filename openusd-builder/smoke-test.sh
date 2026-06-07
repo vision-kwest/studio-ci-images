@@ -7,23 +7,21 @@ gcc --version
 g++ --version
 cmake --version
 ninja --version
-python3 --version
 git --version
 rez --version
 rez-env --help >/dev/null
 pkg-config --version
-
-if command -v pyside6-uic >/dev/null; then
-    pyside6-uic --version || command -v pyside6-uic
-else
-    echo "pyside6-uic was not found on PATH" >&2
-    exit 1
-fi
-
-python3 -c "import PySide6"
-python3 -c "import OpenGL"
-python3 -c "import jinja2"
 dpkg -s libxt-dev >/dev/null
+
+python3 --version
+which python3
+python3 -c "import sys; print(sys.executable)"
+python3 -c "import PySide6; print('PySide6 OK')"
+python3 -c "import OpenGL; print('PyOpenGL OK')"
+python3 -c "import jinja2; print('Jinja2 OK')"
+
+command -v pyside6-uic
+pyside6-uic --version || pyside6-uic --help >/dev/null || true
 
 venv_dir="$(mktemp -d)"
 trap 'rm -rf "${venv_dir}"' EXIT
