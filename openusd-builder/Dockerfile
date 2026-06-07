@@ -61,7 +61,8 @@ RUN apt-get update \
 # `python3 build_scripts/build_usd.py`. PySide6 provides `pyside6-uic`, PyOpenGL
 # is required by usdview/imaging paths, and Jinja2 enables schema-generation
 # tools during OpenUSD builds.
-RUN python3 -m pip install --no-cache-dir --break-system-packages \
+RUN python3 -m pip install --no-cache-dir --break-system-packages --upgrade pip \
+    && python3 -m pip install --no-cache-dir --break-system-packages \
         PySide6 \
         PyOpenGL \
         Jinja2 \
