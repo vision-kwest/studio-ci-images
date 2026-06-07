@@ -88,6 +88,20 @@ For reproducibility, `studio-openusd` should resolve the image digest used by th
 and write that digest into the final USD Rez package manifest. The `sha-*` tag is useful
 for audit trails and reproducing a build from the exact `studio-ci-images` commit.
 
+## Python interpreter policy
+
+The OpenUSD builder image intentionally uses two explicit Python interpreters:
+
+- `/usr/bin/python3` is the OpenUSD build Python. OpenUSD dependency checks and
+  downstream `build_scripts/build_usd.py` invocations should use this interpreter so
+  they see PySide6, PyOpenGL, and Jinja2.
+- `/opt/rez/bin/python` is only for Rez. Rez remains installed in `/opt/rez`, and Rez
+  commands are exposed on `PATH`.
+
+Because `/opt/rez/bin` is on `PATH`, plain `python3` may resolve to
+`/opt/rez/bin/python3` inside the container. Scripts should not rely on plain `python3`
+for OpenUSD build dependency checks; use `/usr/bin/python3` explicitly.
+
 ## Build locally
 
 From the repository root:
